@@ -14,7 +14,6 @@ const MessageItem:React.FC<Props> = ({id, statys, message, onMessageDelete}) => 
 
   useEffect(() => {
     const handler = setTimeout(() => {
-      console.log(`message ${id}`)
       onMessageDelete(id);
     }, 1000);
 
