@@ -1,6 +1,6 @@
 # Test assignment with giphy api, typescript and React
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+You can watch this project on <a href="https://dar-ksen.github.io/giphy-test/" target="_blank">Link</a>
 
 ## Available Scripts
 
