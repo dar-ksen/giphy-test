@@ -1,10 +1,11 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState, useCallback} from 'react';
 import Header from '../header';
 import GiphyService from '../../service/giphy-service';
 import './app.scss';
 import Container from '../container';
-import PictureList from '../picture-list';
+import PictureSwitch from '../picture-switch';
 import MessageList from '../message-list';
+import { getRandomTag } from '../../utils';
 
 const guphyService = new GiphyService();
 
@@ -12,22 +13,19 @@ const guphyService = new GiphyService();
 const  App:React.FC = () => {
 
   const [pictures, setPictures] = useState<IItem[]>([]);  
-  const [tags, setTags] = useState<string[]>([]);  
-  const [tag, setTag] = useState<string>('');
+  const [search, setSearch] = useState<string>('');
   const [isGroup, setIsGroup] = useState<boolean>(false);
   const [isLoaiding, setLoading] = useState<boolean>(false);
   const [messages, setMessages] = useState<IMessage[]>([]);
 
-
-  const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const onSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const idRegExp = /[^a-z, ]/gi;
-    setTag(event.target.value.replace(idRegExp, ''));
+    setSearch(event.target.value.replace(idRegExp, ''));
   }
 
   const onClearHandler = () => {
-    setTags([]);
     setPictures([]);
-    setTag('');
+    setSearch('');
     createMessage('succses', `Очищено`);
   }
 
@@ -36,7 +34,7 @@ const  App:React.FC = () => {
   }
 
   const onPictureHandler = (tag: string) => {
-    setTag(tag);
+    setSearch(tag);
   }
 
   const onMessageDelete = (id:string|number) => {
@@ -54,60 +52,72 @@ const  App:React.FC = () => {
     }
   }
 
+  const sendRequest = useCallback((request:string) => {
+      setLoading(true);
+      const tagArray: string[] =  request.split(',').map(el => el.trim());
+      const requests = tagArray.map((str) => guphyService.getRandomePicture(str));
+      let pictureItem:IItem = {
+        tag: request,
+        id: '',
+        pictures: []
+      };
+
+      Promise.all(requests).then((result) => {
+        result.forEach((tag, index) => {
+          if (tag.data.length === 0) {
+            createMessage('error', `По тэгу ${tagArray[index]} ничего не найдено`);
+          } else {
+            const picture:IPicture  = {
+              id: tag.data.id,
+              tag: tagArray[index],
+              url: tag.data.image_url,
+              width: tag.data.image_width,
+              height: tag.data.image_height,
+              alt: tag.data.title,
+            };
+            pictureItem.id += tag.data.id;
+            pictureItem.pictures.push(picture);
+          }
+        })
+        if (pictureItem.pictures.length !==0) {
+          setPictures((prev) => [...prev, pictureItem]);
+        }
+        setLoading(false);
+      }).catch((error) => {
+        setLoading(false);
+        createMessage('error', `Произошла http ошибка статус - ${error.status}`);
+      })
+    }, []
+  )
+
   const onSearchHandler = () => {
-    if (tag === '') {
+    if (search === '') {
       createMessage('warning', `Заполните поле 'тег'`);
       return;
     }
-
-    setLoading(true);
-    const tagArray: string[] =  tag.split(',').map(el => el.trim());
-    const requests = tagArray.map((str) => guphyService.getRandomePicture(str));
-    let pictureItem:IItem = {
-      tag,
-      id: '',
-      pictures: []
-    };
-
-    Promise.all(requests).then((result) => {
-      result.forEach((tag, index) => {
-        if (tag.data.length === 0) {
-          createMessage('error', `По тэгу ${tagArray[index]} ничего не найдено`);
-        } else {
-          const picture:IPicture  = {
-            id: tag.data.key,
-            tag: tagArray[index],
-            url: tag.data.image_url,
-            width: tag.data.image_width,
-            height: tag.data.image_height,
-            alt: tag.data.title,
-          };
-          pictureItem.id += tag.data.id;
-          pictureItem.pictures.push(picture);
-        }
-      })
-      
-      if (pictureItem.pictures.length !==0) {
-        if (!tags.includes(tag)) {
-          setTags([...tags, tag])
-        }
-        setPictures([...pictures, pictureItem]);
-      }
-      setLoading(false);
-    }).catch((error) => {
-      setLoading(false);
-      createMessage('error', `Произошла ошибка`);
-    })
+    sendRequest(search)
   }
+
+  useEffect(() => {
+    if (search === 'delay') {
+      const interval = setInterval(() => {
+        const search = getRandomTag();
+        sendRequest(search);
+      }, 5000);
+      return () => clearInterval(interval);
+    }
+
+  }, [search, sendRequest])
+
 
   return (
     <>
       <Header>
         <div className="input-group">
           <input
-            onChange={onChange}
+            onChange={onSearchChange}
             name="tag"
-            value={tag}
+            value={search}
             type="text"
             className="form-control"
             placeholder="Введите тег"
@@ -116,13 +126,13 @@ const  App:React.FC = () => {
             {isLoaiding ? 'Загрузка...' : 'Загрузить'}
           </button>
           <button className="btn btn-danger" disabled={pictures.length === 0} onClick={onClearHandler}>Очистить</button>
-          <button className="btn btn-primary" disabled={pictures.length === 0} onClick={onGroupHandler}>
+          <button className="btn btn-primary" onClick={onGroupHandler}>
             {isGroup ? 'Разгрупировать' : 'Группировать'}
           </button>
         </div>
       </Header>
       <Container className="py-5">
-        <PictureList pictures={pictures} isGroup={isGroup} tags={tags} onPictureHandler={onPictureHandler}/>
+        <PictureSwitch pictures={pictures} isGroup={isGroup} onPictureHandler={onPictureHandler}/>
       </Container>
       <MessageList messages={messages} onMessageDelete={onMessageDelete}/>
     </>

@@ -8,9 +8,9 @@ type Props = {
 
 const PictureItem:React.FC<Props> = ({pictures, onPictureHandler}) => {
   const renderedPictures = () => {
-    return pictures.map(({tag, url, alt, width, height}) => {
+    return pictures.map(({tag, url, alt, width, height, id}) => {
       return (
-        <img onClick={()=> onPictureHandler(tag)} src={url} alt={alt} width={width} height={height}/>
+        <img key={id} onClick={()=> onPictureHandler(tag)} src={url} alt={alt} width={width} height={height}/>
       )
     })
   }
