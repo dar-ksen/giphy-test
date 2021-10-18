@@ -2,20 +2,22 @@ import React from "react";
 import './picture-item.scss';
 
 type Props = {
-  tag: string;
-  url: string;
-  width: string | number;
-  height: string | number;
-  alt: string;
+  pictures: IPicture[];
   onPictureHandler: (tag: string) => void;
 }
 
-const PictureItem:React.FC<Props> = ({tag, url, width, height, alt, onPictureHandler}) => {
-  const onClick = () => onPictureHandler(tag);
+const PictureItem:React.FC<Props> = ({pictures, onPictureHandler}) => {
+  const renderedPictures = () => {
+    return pictures.map(({tag, url, alt, width, height}) => {
+      return (
+        <img onClick={()=> onPictureHandler(tag)} src={url} alt={alt} width={width} height={height}/>
+      )
+    })
+  }
   return(
     <div className="col-sm-3 mb-3">
       <div className="picture-item">
-        <img onClick={onClick} src={url} alt={alt} width={width} height={height}/>
+        {renderedPictures()}
       </div>
     </div>
   )

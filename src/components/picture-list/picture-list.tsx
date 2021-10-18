@@ -2,7 +2,7 @@ import React from "react";
 import PictureItem from "../picture-item";
 
 type Props = {
-  pictures: IPicture[];
+  pictures: IItem[];
   isGroup: boolean;
   tags: string[];
   onPictureHandler: (tag: string) => void;
@@ -10,8 +10,8 @@ type Props = {
 
 const PictureList:React.FC<Props>  = ({pictures, isGroup, tags, onPictureHandler}) => {
 
-  const renderedPictures = (currentPictures:IPicture[]) => {
-    return currentPictures.map((picture:IPicture) => {
+  const renderedPictures = (currentPictures:IItem[]) => {
+    return currentPictures.map((picture:IItem) => {
       const {id, ...pictureProps} = picture;
       return <PictureItem key={picture.id} onPictureHandler = {onPictureHandler} {...pictureProps}/>
     })
@@ -19,7 +19,7 @@ const PictureList:React.FC<Props>  = ({pictures, isGroup, tags, onPictureHandler
 
   const renderGroupPictures = () => {
     return tags.map((tag:string) => {
-      const tagPictures: IPicture[]  = pictures.filter((picture) => picture.tag === tag );
+      const tagPictures: IItem[]  = pictures.filter((picture) => picture.tag === tag );
       
       return (
         <div className="row col-12 mb-3">

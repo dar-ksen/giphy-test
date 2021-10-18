@@ -1,0 +1,11 @@
+.message-list {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  top: 8rem;
+  display: flex;
+  justify-content: flex-end;
+  flex-direction: column;
+  padding: 1.5rem;
+  overflow: hidden;
+}
