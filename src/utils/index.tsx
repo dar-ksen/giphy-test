@@ -1,5 +1,5 @@
 const tags = [
-  'test', 'da', 'sort', 'integral', 'arrat', 'exelent', 'terror', 'master', 'sould', 
+  'test', 'da', 'sort', 'integral', 'array', 'excellent', 'terror', 'master', 'soul', 
 ]
 
 export const getRandomTag = () => {

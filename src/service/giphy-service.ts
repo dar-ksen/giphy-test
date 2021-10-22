@@ -10,16 +10,15 @@ export default class GiphyService {
     const res = await fetch(`${this._apiBase}${url}`);
 
     if (!res.ok) {
-      let erorr = new Error(`Could not fetch ${url}, received ${res.status}`) as ErrorWithStatus;
-      erorr.status = res.status;
-      throw erorr;
+      let error = new Error(`Could not fetch ${url}, received ${res.status}`) as ErrorWithStatus;
+      error.status = res.status;
+      throw error;
     }
     return await res.json();
   };
 
-  getRandomePicture = async (tag = "") => {
+  getRandomPicture = async (tag = "") => {
     const url = `/random?api_key=${this._apiKey}&tag=${tag}`;
-
     return await this.getResource(url);
   };
 }

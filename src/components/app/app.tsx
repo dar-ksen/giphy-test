@@ -15,7 +15,7 @@ const  App:React.FC = () => {
   const [pictures, setPictures] = useState<IItem[]>([]);  
   const [search, setSearch] = useState<string>('');
   const [isGroup, setIsGroup] = useState<boolean>(false);
-  const [isLoaiding, setLoading] = useState<boolean>(false);
+  const [isLoading, setLoading] = useState<boolean>(false);
   const [messages, setMessages] = useState<IMessage[]>([]);
 
   const onSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -26,7 +26,7 @@ const  App:React.FC = () => {
   const onClearHandler = () => {
     setPictures([]);
     setSearch('');
-    createMessage('succses', `Очищено`);
+    createMessage('success', `Очищено`);
   }
 
   const onGroupHandler = () => {
@@ -45,17 +45,17 @@ const  App:React.FC = () => {
     ]);
   }
 
-  const createMessage = (statys:'error' | 'succses' | 'warning', message:string) => {
+  const createMessage = (status:'error' | 'success' | 'warning', message:string) => {
     if (message !== '') {
       const id = new Date().getUTCMilliseconds();
-      setMessages((prev) => [...prev, {id, statys, message}]);
+      setMessages((prev) => [...prev, {id, status, message}]);
     }
   }
 
   const sendRequest = useCallback((request:string) => {
       setLoading(true);
       const tagArray: string[] =  request.split(',').map(el => el.trim());
-      const requests = tagArray.map((str) => guphyService.getRandomePicture(str));
+      const requests = tagArray.map((str) => guphyService.getRandomPicture(str));
       let pictureItem:IItem = {
         tag: request,
         id: '',
@@ -85,14 +85,14 @@ const  App:React.FC = () => {
         setLoading(false);
       }).catch((error) => {
         setLoading(false);
-        createMessage('error', `Произошла http ошибка статус - ${error.status}`);
+        createMessage('error', `Error, http status - ${error.status}`);
       })
     }, []
   )
 
   const onSearchHandler = () => {
     if (search === '') {
-      createMessage('warning', `Заполните поле 'тег'`);
+      createMessage('warning', `Заполните поле - 'тег'`);
       return;
     }
     sendRequest(search)
@@ -122,12 +122,12 @@ const  App:React.FC = () => {
             className="form-control"
             placeholder="Введите тег"
           />
-          <button className="btn btn-success" disabled={isLoaiding} onClick={onSearchHandler}>
-            {isLoaiding ? 'Загрузка...' : 'Загрузить'}
+          <button className="btn btn-success" disabled={isLoading} onClick={onSearchHandler}>
+            {isLoading ? 'Загрузка...' : 'Загрузить'}
           </button>
           <button className="btn btn-danger" disabled={pictures.length === 0} onClick={onClearHandler}>Очистить</button>
           <button className="btn btn-primary" onClick={onGroupHandler}>
-            {isGroup ? 'Разгрупировать' : 'Группировать'}
+            {isGroup ? 'Разгруппировать' : 'Группировать'}
           </button>
         </div>
       </Header>

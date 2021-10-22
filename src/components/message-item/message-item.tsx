@@ -4,13 +4,13 @@ import classNames from "classnames";
 
 type Props = {
   id: string | number;
-  statys: 'error' | 'succses' | 'warning';
+  status: 'error' | 'success' | 'warning';
   message: string;
   onMessageDelete: (id: string | number) => void
 }
 
 
-const MessageItem:React.FC<Props> = ({id, statys, message, onMessageDelete}) => {
+const MessageItem:React.FC<Props> = ({id, status, message, onMessageDelete}) => {
 
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -22,14 +22,14 @@ const MessageItem:React.FC<Props> = ({id, statys, message, onMessageDelete}) => 
     };
   }, [id, onMessageDelete]);
 
-  const classes:string = classNames("toast message-item fade show", statys);
+  const classes:string = classNames("toast message-item fade show", status);
 
   const onCLick = () => onMessageDelete(id);
   
   return (
     <div className={classes} role="alert" aria-live="assertive" aria-atomic="true">
       <div className="message-item__header toast-header">
-        <strong className="me-auto">{statys}</strong>
+        <strong className="me-auto">{status}</strong>
         <button onClick={onCLick} type="button" className="btn-close" data-bs-dismiss="toast" aria-label="Закрыть"></button>
       </div>
       <div className="toast-body">

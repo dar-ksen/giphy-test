@@ -15,6 +15,6 @@ interface IItem {
 
 interface IMessage {
   id: string | number;
-  statys: 'error' | 'succses' | 'warning';
+  status: 'error' | 'success' | 'warning';
   message: string;
 }
